@@ -9,11 +9,28 @@ namespace PrimeGrammar
     
     public class State
     {
-        public readonly int ID;
+        public readonly string ID;
 
-        public State(int id)
+        public State(string id)
         {
             ID = id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is State state)
+            {
+                return ID.Equals(state.ID);
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
+        }
+
+        public override int GetHashCode()
+        {
+            return ID.GetHashCode();
         }
     }
 

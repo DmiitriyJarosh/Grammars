@@ -38,6 +38,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions\MoveParseException.cs" />
+    <Compile Include="Exceptions\ParseException.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Program.cs" />

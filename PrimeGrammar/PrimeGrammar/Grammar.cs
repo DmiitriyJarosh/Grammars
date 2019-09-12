@@ -2,14 +2,14 @@
 
 namespace PrimeGrammar
 {
-    public interface GrammarSymbol {}
+    public interface IGrammarSymbol {}
 
     public enum Alphabet
     {
         Zero, One, Epsilon
     }
 
-    public class Terminal : GrammarSymbol
+    public class Terminal : IGrammarSymbol
     {
         public readonly Alphabet Symbol;
 
@@ -19,7 +19,7 @@ namespace PrimeGrammar
         }
     }
     
-    public class Variable : GrammarSymbol
+    public class Variable : IGrammarSymbol
     {
         public readonly string Name;
 
@@ -31,11 +31,11 @@ namespace PrimeGrammar
     
     public class Production
     {
-        public readonly List<GrammarSymbol> LeftPart;
+        public readonly List<IGrammarSymbol> LeftPart;
 
-        public readonly List<GrammarSymbol> RightPart;
+        public readonly List<IGrammarSymbol> RightPart;
 
-        public Production(List<GrammarSymbol> leftPart, List<GrammarSymbol> rightPart)
+        public Production(List<IGrammarSymbol> leftPart, List<IGrammarSymbol> rightPart)
         {
             LeftPart = leftPart;
             RightPart = rightPart;
