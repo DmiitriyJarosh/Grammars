@@ -1,4 +1,5 @@
 ﻿using System;
+using PrimeGrammar.Converter;
 
 namespace PrimeGrammar
 {
@@ -6,7 +7,10 @@ namespace PrimeGrammar
     {
         public static void Main(string[] args)
         {
-            Parser.ParseFromArrow("C:\\Users\\Sharik\\Documents\\GitHub\\Grammars\\PrimeGrammar\\mt2.txt");
+            TuringMachine tm = Parser.ParseFromTuple("C:\\Users\\Sharik\\Documents\\GitHub\\Grammars\\PrimeGrammar\\TM.txt");
+            FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
+            Grammar freeGrammar = freeGrammarConverter.Convert(tm);
+            freeGrammar.PrintToFile("C:\\Users\\Sharik\\Documents\\GitHub\\Grammars\\PrimeGrammar\\output.txt");
         }
     }
 }

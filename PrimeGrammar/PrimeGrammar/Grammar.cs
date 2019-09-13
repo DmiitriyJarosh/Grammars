@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text;
 
 namespace PrimeGrammar
 {
@@ -33,6 +35,28 @@ namespace PrimeGrammar
             LeftPart = leftPart;
             RightPart = rightPart;
         }
+
+        public override string ToString()
+        {
+            StringBuilder result = new StringBuilder();
+            foreach (var elem in LeftPart)
+            {
+                result.Append(elem.Name + "|");
+            }
+
+            result.Remove(result.Length - 1, 1);
+
+            result.Append(" -> ");
+            
+            foreach (var elem in RightPart)
+            {
+                result.Append(elem.Name + "|");
+            }
+
+            result.Remove(result.Length - 1, 1);
+
+            return result.ToString();
+        }
     }
     
     public class Grammar
@@ -51,6 +75,18 @@ namespace PrimeGrammar
             NonTerminals = nonTerminals;
             Terminals = terminals;
             Productions = productions;
+        }
+
+        public void PrintToFile(string path)
+        {
+            using (StreamWriter output = new StreamWriter(path))
+            {
+                output.WriteLine($"Start nonterminal is {StartVariable.Name}");
+                foreach (var production in Productions)
+                {
+                    output.WriteLine(production.ToString());
+                }
+            }
         }
     }
 }

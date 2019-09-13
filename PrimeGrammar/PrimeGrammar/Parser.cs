@@ -36,6 +36,7 @@ namespace PrimeGrammar
                 List<Transition> transitions = new List<Transition>();
                 List<State> ringStates = new List<State>();
                 State startState;
+                string blank;
                 
                 string line = input.ReadLine();
                 if (line == null)
@@ -48,10 +49,11 @@ namespace PrimeGrammar
                     {
                         line = line.Substring(0, line.Length - 1);
                     }
-
+                    
                     string[] elems = line.Split(' ');
                     startState = new State(elems[0]);
-                    for (int i = 1; i < elems.Length; i++)
+                    blank = elems[1];
+                    for (int i = 2; i < elems.Length; i++)
                     {
                         ringStates.Add(new State(elems[i]));
                     }
@@ -71,8 +73,8 @@ namespace PrimeGrammar
                     State from = new State(elems[0]);
                     State to = new State(elems[2]);
 
-                    string read = elems[1];
-                    string write = elems[3];
+                    string read = elems[1].Equals(blank) ? "Blank" : elems[1];
+                    string write = elems[3].Equals(blank) ? "Blank" : elems[3];
 
                     Move movement = MoveFromString(elems[4]);
                     
@@ -87,7 +89,8 @@ namespace PrimeGrammar
                     line = input.ReadLine();
                 }
                 
-                return new TuringMachine(startState, states.ToList(), transitions, ringStates);
+                alphabet.Add("Blank");
+                return new TuringMachine(startState, states.ToList(), transitions, ringStates, alphabet.ToList());
             }
         }
 
@@ -106,6 +109,7 @@ namespace PrimeGrammar
                 List<State> ringStates = new List<State>();
                 HashSet<string> alphabet = new HashSet<string>();
                 State startState;
+                string blank;
                 
                 string line = input.ReadLine();
                 if (line == null)
@@ -121,7 +125,8 @@ namespace PrimeGrammar
 
                     string[] elems = line.Split(' ');
                     startState = new State(elems[0]);
-                    for (int i = 1; i < elems.Length; i++)
+                    blank = elems[1];
+                    for (int i = 2; i < elems.Length; i++)
                     {
                         ringStates.Add(new State(elems[i]));
                     }
@@ -147,8 +152,8 @@ namespace PrimeGrammar
                     State from = new State(elems[0].Substring(1));
                     State to = new State(elems[1].Substring(1, elems[1].Length - 2));
 
-                    string read = elems[0][0].ToString();
-                    string write = elems[1][0].ToString();
+                    string read = elems[0][0].ToString().Equals(blank) ? "Blank" : elems[0][0].ToString();
+                    string write = elems[1][0].ToString().Equals(blank) ? "Blank" : elems[1][0].ToString();
 
                     Move movement = MoveFromString(elems[1][elems[1].Length - 1].ToString());
                     
@@ -162,8 +167,9 @@ namespace PrimeGrammar
                     
                     line = input.ReadLine();
                 }
-                
-                return new TuringMachine(startState, states.ToList(), transitions, ringStates);
+
+                alphabet.Add("Blank");
+                return new TuringMachine(startState, states.ToList(), transitions, ringStates, alphabet.ToList());
             }
         }
     }

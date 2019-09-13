@@ -54,6 +54,11 @@ namespace PrimeGrammar
             To = to;
             Movement = movement;
         }
+
+        public override int GetHashCode()
+        {
+            return Read.GetHashCode();
+        }
     }
     
     public class TuringMachine
@@ -66,9 +71,12 @@ namespace PrimeGrammar
 
         public readonly List<State> RingStates;
 
-        public TuringMachine(State initialState, List<State> states, List<Transition> transitions, List<State> ringStates)
+        public readonly List<string> Alphabet;
+
+        public TuringMachine(State initialState, List<State> states, List<Transition> transitions, List<State> ringStates, List<string> alphabet)
         {
             InitialState = initialState;
+            Alphabet = alphabet;
             States = states;
             Transitions = transitions;
             RingStates = ringStates;
