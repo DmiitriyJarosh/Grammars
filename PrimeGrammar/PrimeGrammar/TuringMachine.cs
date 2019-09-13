@@ -55,6 +55,22 @@ namespace PrimeGrammar
             Movement = movement;
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Transition transition)
+            {
+                return From.Equals(transition.From)
+                       && To.Equals(transition.To)
+                       && Read.Equals(transition.Read)
+                       && Write.Equals(transition.Write)
+                       && Movement == transition.Movement;
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
+        }
+
         public override int GetHashCode()
         {
             return Read.GetHashCode();
