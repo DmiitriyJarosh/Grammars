@@ -2,40 +2,33 @@
 
 namespace PrimeGrammar
 {
-    public interface IGrammarSymbol {}
-
-    public enum Alphabet
-    {
-        Zero, One, Epsilon
-    }
-
-    public class Terminal : IGrammarSymbol
-    {
-        public readonly Alphabet Symbol;
-
-        public Terminal(Alphabet symbol)
-        {
-            Symbol = symbol;
-        }
-    }
-    
-    public class Variable : IGrammarSymbol
+    public abstract class GrammarSymbol
     {
         public readonly string Name;
 
-        public Variable(string name)
+        public GrammarSymbol(string name)
         {
             Name = name;
         }
     }
+
+    public class Terminal : GrammarSymbol
+    {
+        public Terminal(string symbol) : base(symbol) {}
+    }
+    
+    public class Variable : GrammarSymbol
+    {
+        public Variable(string name) : base(name) {}
+    }
     
     public class Production
     {
-        public readonly List<IGrammarSymbol> LeftPart;
+        public readonly List<GrammarSymbol> LeftPart;
 
-        public readonly List<IGrammarSymbol> RightPart;
+        public readonly List<GrammarSymbol> RightPart;
 
-        public Production(List<IGrammarSymbol> leftPart, List<IGrammarSymbol> rightPart)
+        public Production(List<GrammarSymbol> leftPart, List<GrammarSymbol> rightPart)
         {
             LeftPart = leftPart;
             RightPart = rightPart;
@@ -48,9 +41,15 @@ namespace PrimeGrammar
 
         public readonly List<Production> Productions;
 
-        public Grammar(Variable startVariable, List<Production> productions)
+        public readonly List<Variable> NonTerminals;
+
+        public readonly List<Terminal> Terminals;
+
+        public Grammar(Variable startVariable, List<Production> productions, List<Terminal> terminals, List<Variable> nonTerminals)
         {
             StartVariable = startVariable;
+            NonTerminals = nonTerminals;
+            Terminals = terminals;
             Productions = productions;
         }
     }
