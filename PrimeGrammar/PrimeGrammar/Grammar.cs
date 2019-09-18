@@ -12,6 +12,23 @@ namespace PrimeGrammar
         {
             Name = name;
         }
+        
+        public override bool Equals(object obj)
+        {
+            if (obj is GrammarSymbol symbol)
+            {
+                return Name.Equals(symbol.Name);
+            }
+            else
+            {
+                return base.Equals(obj);
+            }
+        }
+        
+        public override int GetHashCode()
+        {
+            return Name.GetHashCode();
+        }
     }
 
     public class Terminal : GrammarSymbol
@@ -29,6 +46,14 @@ namespace PrimeGrammar
         public readonly List<GrammarSymbol> LeftPart;
 
         public readonly List<GrammarSymbol> RightPart;
+
+        public Production(string leftPart, string rightPart)
+        {
+            LeftPart = new List<GrammarSymbol>();
+            RightPart = new List<GrammarSymbol>();
+            LeftPart.Add(new Variable(leftPart));
+            RightPart.Add(new Variable(rightPart));
+        }
 
         public Production(List<GrammarSymbol> leftPart, List<GrammarSymbol> rightPart)
         {

@@ -38,6 +38,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Converter\ContextSensitiveConverter.cs" />
     <Compile Include="Converter\FreeGrammarConverter.cs" />
     <Compile Include="Converter\IConverter.cs" />
     <Compile Include="Exceptions\MoveParseException.cs" />
