@@ -8,8 +8,8 @@ namespace PrimeGrammar
 {
     public class Generator
     {
-        // Length of number in binary <= 8
-        private const int MaxLength = 8;
+        // Length of number in binary <= 10
+        private const int MaxLength = 10;
 
         private Variable Eps;
         
@@ -26,8 +26,6 @@ namespace PrimeGrammar
 
         public void Execute()
         {
-            // TODO: open file
-
             foreach (var production in Grammar.Productions)
             {
                 // start from all productions which left part = Start variable
@@ -47,26 +45,26 @@ namespace PrimeGrammar
                 return;
             foreach (var production in Grammar.Productions)
             {
-                for (int i = 0; i < list.Count - production.LeftPart.Count; i++)
+                for (int i = 0; i < list.Count - production.LeftPart.Count + 1; i++)
                 {
                     bool contain = true;
-                    for (int j = i; j < i + production.LeftPart.Count && contain; j++)
+                    for (int j = 0; j < production.LeftPart.Count && contain; j++)
                     {
-                        if (!list[j].Equals(production.LeftPart[j - i]))
+                        if (!list[j + i].Equals(production.LeftPart[j]))
                         {
                             contain = false;
                         }
                     }
-                    
+
                     if (contain)
                     {
                         List<GrammarSymbol> newList = new List<GrammarSymbol>();
-                        for (int j = 0; j < i - 1; j++)
+                        for (int j = 0; j < i; j++)
                         {
                             newList.Add(list[j]);
                         }
 
-                        for (int j = i; j < i + production.RightPart.Count; j++)
+                        for (int j = 0; j < production.RightPart.Count; j++)
                         {
                             if (!production.RightPart[j].Equals(Eps))
                             {
@@ -78,6 +76,7 @@ namespace PrimeGrammar
                         {
                             newList.Add(list[j]);
                         }
+
                         GenerateNumber(length + 1, newList);
                     }
                 }
@@ -89,7 +88,7 @@ namespace PrimeGrammar
             bool contain = true;
             foreach (var symb in list)
             {
-                if (Grammar.Terminals.Contains(new Terminal(symb.Name)))
+                if (!Grammar.Terminals.Contains(new Terminal(symb.Name)))
                 {
                     contain = false;
                     break;
