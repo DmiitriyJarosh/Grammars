@@ -68,7 +68,7 @@ Bq14->Bq15R
 
 1q16->aq16R
 0q16->1q17L
-Bq16->BqER
+Bq16->BSTOPR
 
 aq17->0q17L
 bq17->1q17L

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace PrimeGrammar.Converter
 {
@@ -14,6 +16,8 @@ namespace PrimeGrammar.Converter
                 new List<GrammarSymbol>(){new Variable("A1")},
                 new List<GrammarSymbol>(){new Variable(turingMachine.InitialState.ID), new Variable("A2")}
             ));
+            
+            Console.WriteLine("1/8 step finished");
 
             // production 2
             foreach (var symbol in alphabet)
@@ -24,11 +28,15 @@ namespace PrimeGrammar.Converter
                 ));
             }
             
+            Console.WriteLine("2/8 step finished");
+            
             // production 3
             productions.Add(new Production(
                 new List<GrammarSymbol>(){new Variable("A2")},
                 new List<GrammarSymbol>(){new Variable("A3")}
             ));
+            
+            Console.WriteLine("3/8 step finished");
             
             // production 4
             productions.Add(new Production(
@@ -36,91 +44,77 @@ namespace PrimeGrammar.Converter
                 new List<GrammarSymbol>(){new Terminal("[eps,Blank]"), new Variable("A3")}
             ));
             
+            Console.WriteLine("4/8 step finished");
+            
             // production 5
             productions.Add(new Production(
                 new List<GrammarSymbol>(){new Variable("A3")},
                 new List<GrammarSymbol>(){new Terminal("eps")}
             ));
             
+            Console.WriteLine("5/8 step finished");
+            
             alphabet.Add("eps");
             // production 6
             foreach (var a in alphabet)
             {
-                foreach (var startState in turingMachine.States)
+                foreach (var transition in turingMachine.Transitions)
                 {
-                    foreach (var finishState in turingMachine.States)
+                    State startState = transition.From;
+                    State finishState = transition.To;
+                    String readSymbol = transition.Read;
+                    String writeSymbol = transition.Write;
+                    if (transition.Movement == Move.Left)
                     {
-                        foreach (var readSymbol in turingMachine.Alphabet)
-                        {
-                            foreach (var writeSymbol in turingMachine.Alphabet)
-                            {
-                                Transition transition = new Transition(
-                                    startState,
-                                    readSymbol,
-                                    finishState,
-                                    writeSymbol,
-                                    Move.Right
-                                );
-
-                                if (turingMachine.Transitions.Contains(transition))
-                                {
-                                    productions.Add(new Production(
-                                        new List<GrammarSymbol>(){new Variable(startState.ID), new Variable($"[{a},{readSymbol}]")},
-                                        new List<GrammarSymbol>(){new Variable($"[{a},{writeSymbol}]"), new Variable(finishState.ID)}
-                                    ));
-                                }
-                            }
-                        }
+                        continue;
                     }
+                    
+                    productions.Add(new Production(
+                        new List<GrammarSymbol>(){new Variable(startState.ID), new Variable($"[{a},{readSymbol}]")},
+                        new List<GrammarSymbol>(){new Variable($"[{a},{writeSymbol}]"), new Variable(finishState.ID)}
+                    ));
                 }
             }
+            
+            Console.WriteLine("6/8 step finished");
             
             // production 7
             foreach (var a in alphabet)
             {
                 foreach (var b in alphabet)
                 {
-                    foreach (var startState in turingMachine.States)
+                    foreach (var transition in turingMachine.Transitions)
                     {
-                        foreach (var finishState in turingMachine.States)
+                        State startState = transition.From;
+                        State finishState = transition.To;
+                        String readSymbol = transition.Read;
+                        String writeSymbol = transition.Write;
+                        if (transition.Movement == Move.Right)
                         {
-                            foreach (var readSymbol in turingMachine.Alphabet)
-                            {
-                                foreach (var writeSymbol in turingMachine.Alphabet)
-                                {
-                                    foreach (var E in turingMachine.Alphabet)
-                                    {
-                                        Transition transition = new Transition(
-                                            startState,
-                                            readSymbol,
-                                            finishState,
-                                            writeSymbol,
-                                            Move.Left
-                                        );
-
-                                        if (turingMachine.Transitions.Contains(transition))
-                                        {
-                                            productions.Add(new Production(
-                                                new List<GrammarSymbol>()
-                                                    {new Variable($"[{b},{E}]"), new Variable(startState.ID), new Variable($"[{a},{readSymbol}]")},
-                                                new List<GrammarSymbol>()
-                                                    {new Variable(finishState.ID), new Variable($"[{b},{E}]"), new Variable($"[{a},{writeSymbol}]")}
-                                            ));
-                                        }
-                                    }
-                                }
-                            }
+                            continue;
+                        }
+                        
+                        foreach (var E in turingMachine.Alphabet)
+                        {
+                            productions.Add(new Production(
+                                new List<GrammarSymbol>()
+                                    {new Variable($"[{b},{E}]"), new Variable(startState.ID), new Variable($"[{a},{readSymbol}]")},
+                                new List<GrammarSymbol>()
+                                    {new Variable(finishState.ID), new Variable($"[{b},{E}]"), new Variable($"[{a},{writeSymbol}]")}
+                            ));
                         }
                     }
                 }
             }
             
+            Console.WriteLine("7/8 step finished");
+            
             // production 8
-            foreach (var a in alphabet)
+            foreach (var q in turingMachine.RingStates)
             {
                 foreach (var C in turingMachine.Alphabet)
                 {
-                    foreach (var q in turingMachine.RingStates)
+                    foreach (var a in alphabet)
                     {
                         productions.Add(new Production(
                             new List<GrammarSymbol>(){new Variable($"[{a},{C}]"), new Variable(q.ID)},
@@ -131,14 +125,16 @@ namespace PrimeGrammar.Converter
                             new List<GrammarSymbol>(){new Variable(q.ID), new Variable($"[{a},{C}]")},
                             new List<GrammarSymbol>(){new Variable(q.ID), new Terminal(a), new Variable(q.ID)}
                         ));
-                        
-                        productions.Add(new Production(
-                            new List<GrammarSymbol>(){new Variable(q.ID)},
-                            new List<GrammarSymbol>(){new Terminal("eps")}
-                        ));
                     }
                 }
+                
+                productions.Add(new Production(
+                    new List<GrammarSymbol>(){new Variable(q.ID)},
+                    new List<GrammarSymbol>(){new Terminal("eps")}
+                ));
             }
+            
+            Console.WriteLine("8/8 step finished");
 
             return productions;
         }
@@ -147,7 +143,31 @@ namespace PrimeGrammar.Converter
         public Grammar Convert(TuringMachine turingMachine)
         {
             List<Production> productions = GetProductions(turingMachine);
-            return new Grammar(new Variable("A1"), productions, null, null);
+            List<Terminal> terminals = new List<Terminal>()
+            {
+                new Terminal("0"),
+                new Terminal("1"),
+                new Terminal("eps")
+            };
+            HashSet<Variable> variables = new HashSet<Variable>();
+            foreach (var production in productions)
+            {
+                foreach (var elem in production.LeftPart)
+                {
+                    if (elem is Variable nonterminal)
+                    {
+                        variables.Add(nonterminal);
+                    }
+                }
+                foreach (var elem in production.RightPart)
+                {
+                    if (elem is Variable nonterminal)
+                    {
+                        variables.Add(nonterminal);
+                    }
+                }
+            }
+            return new Grammar(new Variable("A1"), productions, terminals, variables.ToList());
         }
     }
 }

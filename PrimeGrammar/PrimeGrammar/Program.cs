@@ -1,5 +1,4 @@
-﻿using System;
-using PrimeGrammar.Converter;
+﻿using PrimeGrammar.Converter;
 
 namespace PrimeGrammar
 {
@@ -7,10 +6,15 @@ namespace PrimeGrammar
     {
         public static void Main(string[] args)
         {
-            TuringMachine tm = Parser.ParseFromTuple("C:\\Users\\Sharik\\Documents\\GitHub\\Grammars\\PrimeGrammar\\TM.txt");
+            TuringMachine lba = Parser.ParseFromArrow("D:\\GitHub\\Grammars\\PrimeGrammar\\lba.txt");
+            ContextSensitiveConverter contextSensitiveConverter = new ContextSensitiveConverter();
+            Grammar contextSensitiveGrammar = contextSensitiveConverter.Convert(lba);
+            TuringMachine tm = Parser.ParseFromArrow("D:\\GitHub\\Grammars\\PrimeGrammar\\mt.txt");
             FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
             Grammar freeGrammar = freeGrammarConverter.Convert(tm);
-            freeGrammar.PrintToFile("C:\\Users\\Sharik\\Documents\\GitHub\\Grammars\\PrimeGrammar\\output.txt");
+            freeGrammar.PrintToFile("D:\\GitHub\\Grammars\\PrimeGrammar\\FreeGrammar.txt");
+            Generator generator = new Generator(freeGrammar, "");
+            generator.Execute();
         }
     }
 }

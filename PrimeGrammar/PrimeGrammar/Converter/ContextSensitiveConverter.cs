@@ -16,7 +16,7 @@ namespace PrimeGrammar.Converter
         
         private const string RightMarker = "$";
         
-        private string[] AlphabetInput = new[] {"0", "1"};
+        private string[] AlphabetInput = {"0", "1"};
 
         private List<Terminal> Terminals;
 
