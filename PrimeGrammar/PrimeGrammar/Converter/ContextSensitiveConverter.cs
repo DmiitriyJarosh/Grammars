@@ -92,29 +92,26 @@ namespace PrimeGrammar.Converter
                                     {
                                         /////////////
                                         // 5.3     [¢, q, X,a] [Z, b]→ [¢, Y, a] [p, Z,b], если (p, Y, R)∈δ(q,X);
-                                        arg =
-                                            $"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name}][{Z}, {b.Name}]";
-                                        val =
-                                            $"[{LeftMarker},{transition.Write},{a.Name}][{transition.To.ID},{Z},{b.Name}]";
-                                        Add(arg, val);
+                                        Add($"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{Z}, {b.Name}]",
+                                            $"[{LeftMarker},{transition.Write},{a.Name}]",
+                                            $"[{transition.To.ID},{Z},{b.Name}]");
                                         /////////////
                                         
                                         /////////////
                                         // 6.1     [q,X,a] [Z, b] → [Y, a][p, Z,b], если (p, Y, R)∈δ(q,X); 
-                                        arg =
-                                            $"[{transition.From.ID},{transition.Read},{a.Name}][{Z}, {b.Name}]";
-                                        val =
-                                            $"[{transition.Write},{a.Name}][{transition.To.ID},{Z},{b.Name}]";
-                                        Add(arg, val);
+                                        Add($"[{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{Z}, {b.Name}]",
+                                            $"[{transition.Write},{a.Name}]",
+                                            $"[{transition.To.ID},{Z},{b.Name}]");
                                         /////////////
                                         
                                         /////////////
                                         // 6.3     [q, X,a] [Z, b,$]→ [Y, a] [p, Z,b,$] ,  если (p, Y, R)∈δ(q,X);
-                                        arg =
-                                            $"[{transition.From.ID},{transition.Read},{a.Name}][{Z}, {b.Name}, {RightMarker}]";
-                                        val =
-                                            $"[{transition.Write},{a.Name}][{transition.To.ID},{Z},{b.Name}, {RightMarker}]";
-                                        Add(arg, val);
+                                        Add($"[{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{Z}, {b.Name}, {RightMarker}]",
+                                            $"[{transition.Write},{a.Name}]",
+                                            $"[{transition.To.ID},{Z},{b.Name}, {RightMarker}]");
                                         /////////////
                                     }
                                 }
@@ -165,16 +162,18 @@ namespace PrimeGrammar.Converter
                                     {
                                         /////////////
                                         // 6.2     [Z, b] [q, X,a] → [p,Z,b] [Y, a], если (p, Y, L)∈δ(q,X)
-                                        arg = $"[{Z},{b.Name}][{transition.From.ID},{transition.Read},{a.Name}]";
-                                        val = $"[{transition.To.ID},{Z},{b}][{transition.Write},{a.Name}]";
-                                        Add(arg, val);
+                                        Add($"[{Z},{b.Name}]",
+                                            $"[{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{transition.To.ID},{Z},{b}]",
+                                            $"[{transition.Write},{a.Name}]");
                                         /////////////
-                                        
+
                                         /////////////
                                         // 7.3     [Z, b] [q,X, a,$] → [p, Z, b] [Y, a,$],  если (p, Y, L)∈δ(q,X);
-                                        arg = $"[{Z},{b.Name}][{transition.From.ID},{transition.Read},{a.Name}, {LeftMarker}]";
-                                        val = $"[{transition.To.ID},{Z},{b}][{transition.Write},{a.Name}, {LeftMarker}]";
-                                        Add(arg, val);
+                                        Add($"[{Z},{b.Name}]",
+                                            $"[{transition.From.ID},{transition.Read},{a.Name}, {LeftMarker}]",
+                                            $"[{transition.To.ID},{Z},{b}]",
+                                            $"[{transition.Write},{a.Name}, {LeftMarker}]");
                                         /////////////
                                     }
                                 }
@@ -191,12 +190,12 @@ namespace PrimeGrammar.Converter
                 Add(Axiom1, val);
                 
                 //4.1     S1→[q0, ¢, a, a]S2
-                val = String.Format("[{0},{1},{2},{2}]{3}", turingMachine.InitialState.ID, LeftMarker, a.Name, Axiom2);
-                Add(Axiom1, val);
+                val = String.Format("[{0},{1},{2},{2}]", turingMachine.InitialState.ID, LeftMarker, a.Name);
+                Add(Axiom1, null, val, Axiom2);
                 
                 //4.2     S2→[a,a]S2;
-                val = String.Format("[{0},{0}]{1}", a.Name, Axiom2);
-                Add(Axiom2, val);
+                val = String.Format("[{0},{0}]", a.Name);
+                Add(Axiom2, null, val, Axiom2);
                 
                 //4.3     S2→[a, a,$]; 
                 val = String.Format("[{0},{0},{1}]", a.Name, RightMarker);
@@ -267,40 +266,59 @@ namespace PrimeGrammar.Converter
                     {
                         /////////////
                         //9.1     a[X,b]→ab;
-                        arg = $"{a.Name}[{X},{b.Name}]";
-                        val = $"{a.Name}{b.Name}";
-                        Add(arg, val);
+                        Add($"{a.Name}",
+                            $"[{X},{b.Name}]",
+                            $"{a.Name}",
+                            $"{b.Name}");
                         /////////////
                         
                         /////////////
                         //9.2     a[X,b,$]→ab;
-                        arg = $"{a.Name}[{X},{b.Name},{RightMarker}]";
-                        val = $"{a.Name}{b.Name}";
-                        Add(arg, val);
+                        Add($"{a.Name}",
+                            $"[{X},{b.Name},{RightMarker}]",
+                            $"{a.Name}",
+                            $"{b.Name}");
                         /////////////
                         
                         /////////////
                         //9.3     [X, a]b→ab;
-                        arg = $"[{X},{a.Name}]{b.Name}";
-                        val = $"{a.Name}{b.Name}";
-                        Add(arg, val);
+                        Add($"[{X},{a.Name}]",
+                            $"{b.Name}",
+                            $"{a.Name}",
+                            $"{b.Name}");
                         /////////////
                         
                         /////////////
                         //9.4     [¢, X, a]b→ab;
-                        arg = $"[{LeftMarker},{X},{a.Name}]{b.Name}";
-                        val = $"{a.Name}{b.Name}";
-                        Add(arg, val);
+                        Add($"[{LeftMarker},{X},{a.Name}]",
+                            $"{b.Name}",
+                            $"{a.Name}",
+                            $"{b.Name}");
                         /////////////
                     }
                 }
             }
-            
             return null;
         }
 
         private void Add(string arg, string val)
         {
+            Productions.Add(new Production(arg, val));
+        }
+        
+        private void Add(string arg1, string arg2, string val1, string val2)
+        {
+            List<GrammarSymbol> arg = new List<GrammarSymbol>();
+            List<GrammarSymbol> val = new List<GrammarSymbol>();
+            
+            if (arg1 != null)
+                arg.Add(new Variable(arg1));
+            if (arg2 != null)
+                arg.Add(new Variable(arg2));
+            if (val1 != null)
+                val.Add(new Variable(val1));
+            if (val2 != null)
+                val.Add(new Variable(val2));
             Productions.Add(new Production(arg, val));
         }
     }
