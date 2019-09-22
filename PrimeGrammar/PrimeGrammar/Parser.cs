@@ -168,7 +168,11 @@ namespace PrimeGrammar
                     line = input.ReadLine();
                 }
 
-                alphabet.Add("Blank");
+                if (!transitions.All(t => t.Read != "Blank" && t.Write != "Blank"))
+                {
+                    alphabet.Add("Blank");
+                }
+                
                 return new TuringMachine(startState, states.ToList(), transitions, ringStates, alphabet.ToList());
             }
         }
