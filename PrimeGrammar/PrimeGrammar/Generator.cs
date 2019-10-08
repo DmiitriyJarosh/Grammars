@@ -9,9 +9,9 @@ namespace PrimeGrammar
     public class Generator
     {
         // Length of number in binary <= 10
-        private const int MaxLength = 8;
+        private const int MaxLength = 25;
         
-        private const int MaxIterations = 400;
+        private const int MaxIterations = 1_000_0000;
 
         private Variable Eps;
         
@@ -19,91 +19,100 @@ namespace PrimeGrammar
 
         private string FilePath;
 
+        private string WritePath;
+
+        private HashSet<string> Used;
+
         public Generator(Grammar grammar, string filePath)
         {
             Grammar = grammar;
             FilePath = filePath;
             Eps = new Variable("eps");
+            Used = new HashSet<string>();
+            
+            string startupPath = Environment.CurrentDirectory;
+            WritePath = startupPath + "\\" + "numbers.txt";
         }
 
         public void Execute()
         {
-            foreach (var production in Grammar.Productions)
+            for (int i = 0; i < Grammar.Productions.Count; i++)
             {
+                Production production = Grammar.Productions[i];
                 // start from all productions which left part = Start variable
                 if (production.LeftPart.Count == 1 
                     && production.LeftPart[0].Equals(Grammar.StartVariable))
                 {
                     // TODO: Right part not epsilon!!!!
-                    GenerateNumber(production.RightPart);
+                    GenerateNumber(production.RightPart, i);
                 }
             }
         }
-        
-        private void GenerateNumber(List<GrammarSymbol> list)
+
+        private void GenerateNumber(List<GrammarSymbol> list, int pr)
         {
-            TryWrite(list);
-            if (list.Count == MaxLength)
+            int count = 0;
+            Queue<State> queue = new Queue<State>();
+            queue.Enqueue(new State(list, pr));
+            while (count != MaxIterations && queue.Count != 0)
             {
-                int count = 0;
-                Queue<List<GrammarSymbol>> queue = new Queue<List<GrammarSymbol>>();
-                queue.Enqueue(list);
-                int it = queue.Count;
-                while (count != MaxIterations)
+                count++;
+                State state = queue.Dequeue();
+                List<GrammarSymbol> workList = state.Symbols;
+                TryWrite(state);
+
+                for (int k = 0; k < Grammar.Productions.Count; k++)
                 {
-                    count++;
-                    while (it != 0)
+                    Production production = Grammar.Productions[k];
+                    
+                    for (int i = 0; i < workList.Count - production.LeftPart.Count + 1; i++)
                     {
-                        it--;
-                        List<GrammarSymbol> workList = queue.Dequeue();
-                        TryWrite(workList);
-                        
-                        foreach (var production in Grammar.Productions)
+                        bool contain = true;
+                        for (int j = 0; j < production.LeftPart.Count && contain; j++)
                         {
-                            for (int i = 0; i < workList.Count - production.LeftPart.Count + 1; i++)
+                            if (!workList[j + i].Equals(production.LeftPart[j]))
                             {
-                                bool contain = true;
-                                for (int j = 0; j < production.LeftPart.Count && contain; j++)
+                                contain = false;
+                            }
+                        }
+
+                        if (contain)
+                        {
+                            List<GrammarSymbol> newList = new List<GrammarSymbol>();
+                            for (int j = 0; j < i; j++)
+                            {
+                                newList.Add(workList[j]);
+                            }
+
+                            for (int j = 0; j < production.RightPart.Count; j++)
+                            {
+                                if (!production.RightPart[j].Equals(Eps))
                                 {
-                                    if (!workList[j + i].Equals(production.LeftPart[j]))
-                                    {
-                                        contain = false;
-                                    }
+                                    newList.Add(production.RightPart[j]);
                                 }
+                            }
 
-                                if (contain)
+                            for (int j = i + production.LeftPart.Count; j < workList.Count; j++)
+                            {
+                                newList.Add(workList[j]);
+                            }
+
+                            if (MaxLength >= newList.Count && Check(newList))
+                            {
+                                List<int> position = new List<int>();
+                                foreach (var pos in state.Position)
                                 {
-                                    List<GrammarSymbol> newList = new List<GrammarSymbol>();
-                                    for (int j = 0; j < i; j++)
-                                    {
-                                        newList.Add(workList[j]);
-                                    }
-
-                                    for (int j = 0; j < production.RightPart.Count; j++)
-                                    {
-                                        if (!production.RightPart[j].Equals(Eps))
-                                        {
-                                            newList.Add(production.RightPart[j]);
-                                        }
-                                    }
-
-                                    for (int j = i + production.LeftPart.Count; j < workList.Count; j++)
-                                    {
-                                        newList.Add(workList[j]);
-                                    }
-
-                                    if (workList.Count >= newList.Count)
-                                    {
-                                        queue.Enqueue(newList);
-                                    }
+                                    position.Add(pos);
                                 }
+                                position.Add(k);
+                                queue.Enqueue(new State(newList, position));
                             }
                         }
                     }
                 }
             }
 
-            if (list.Count == MaxLength)
+            /*if (list.Count == MaxLength)
             {
                 return;
             }
@@ -142,14 +151,35 @@ namespace PrimeGrammar
                             newList.Add(list[j]);
                         }
 
-                        GenerateNumber(newList);
+                        if (!TryWrite(newList) && newList.Count > list.Count)
+                        {
+                            GenerateNumber(newList);
+                        }
                     }
                 }
-            }
+            }*/
         }
 
-        private void TryWrite(List<GrammarSymbol> list)
+        private bool Check(List<GrammarSymbol> list)
         {
+            string s = "";
+            foreach (var item in list)
+            {
+                s += item.Name;
+            }
+
+            if (!Used.Contains(s))
+            {
+                Used.Add(s);
+                return true;
+            }
+
+            return false;
+        }
+        
+        private bool TryWrite(State state)
+        {
+            List<GrammarSymbol> list = state.Symbols;
             bool contain = true;
             foreach (var symb in list)
             {
@@ -162,18 +192,46 @@ namespace PrimeGrammar
 
             if (contain)
             {
-                foreach (var symb in list)
+                using (StreamWriter sw = new StreamWriter(WritePath, true, System.Text.Encoding.Default))
                 {
-                    Console.Write(symb.Name);
+                    String s = "";
+                    foreach (var symb in list)
+                    {
+                        s += symb.Name;
+                    }
+
+                    sw.WriteLine(s);
+                    for (int i = 0; i < state.Position.Count - 1; i++)
+                    {
+                        sw.WriteLine("        {0}", Grammar.Productions[state.Position[i]]);
+                    }
+
+                    sw.WriteLine("        {0}", Grammar.Productions[state.Position[state.Position.Count - 1]]);
                 }
-                Console.WriteLine();
+                return true;
+            }
+
+            return false;
+        }
+
+        private class State
+        {
+            public List<int> Position { get; }
+            
+            public List<GrammarSymbol> Symbols { get; }
+
+            public State(List<GrammarSymbol> symbols, List<int> position)
+            {
+                Position = position;
+                Symbols = symbols;
             }
             
-            foreach (var symb in list)
+            public State(List<GrammarSymbol> symbols, int pos)
             {
-                Console.Write(symb.Name);
+                Position = new List<int>();
+                Position.Add(pos);
+                Symbols = symbols;
             }
-            Console.WriteLine();
         }
     }
 }
