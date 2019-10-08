@@ -43,6 +43,7 @@
     <Compile Include="Converter\IConverter.cs" />
     <Compile Include="Exceptions\MoveParseException.cs" />
     <Compile Include="Exceptions\ParseException.cs" />
+    <Compile Include="FreeGrammarFilter.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Parser.cs" />
