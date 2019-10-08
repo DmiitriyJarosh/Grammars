@@ -10,12 +10,10 @@ namespace PrimeGrammar
             //TuringMachine lba = Parser.ParseFromArrow("D:\\GitHub\\Grammars\\PrimeGrammar\\lba.txt");
             //ContextSensitiveConverter contextSensitiveConverter = new ContextSensitiveConverter();
             //Grammar contextSensitiveGrammar = contextSensitiveConverter.Convert(lba);
-            //TuringMachine tm = Parser.ParseFromArrow("");
-            //FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
-            //Grammar freeGrammar = freeGrammarConverter.Convert(tm);
-            //freeGrammar.PrintToFile("D:\\GitHub\\Grammars\\PrimeGrammar\\FreeGrammar.txt");
-            Grammar test = GenerateTest();
-            Generator generator = new Generator(test, "");
+            TuringMachine tm = Parser.ParseFromArrow("C:\\Users\\volod\\Desktop\\Git\\Grammars\\PrimeGrammar\\mt.txt");
+            FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
+            Grammar freeGrammar = freeGrammarConverter.Convert(tm);
+            Generator generator = new Generator(freeGrammar, "");
             generator.Execute();
         }
 
