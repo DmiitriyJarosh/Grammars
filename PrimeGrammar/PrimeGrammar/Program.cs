@@ -7,14 +7,13 @@ namespace PrimeGrammar
     {
         public static void Main(string[] args)
         {
-            TuringMachine lba = Parser.ParseFromTuple("C:\\Users\\senior\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarLba.txt");
+            TuringMachine lba = Parser.ParseFromTuple("C:\\Users\\volod\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarLba.txt");
             ContextSensitiveConverter contextSensitiveConverter = new ContextSensitiveConverter();
             Grammar contextSensitiveGrammar = contextSensitiveConverter.Convert(lba);
-            TuringMachine tm = Parser.ParseFromTuple("C:\\Users\\senior\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarTM.txt");
-            FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
-            Grammar freeGrammar = freeGrammarConverter.Convert(tm);
-            freeGrammar.PrintToFile("C:\\Users\\senior\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarGrammar.txt");
-            Generator generator = new Generator(freeGrammar, "");
+            //TuringMachine tm = Parser.ParseFromTuple("C:\\Users\\volod\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarTM.txt");
+            //FreeGrammarConverter freeGrammarConverter = new FreeGrammarConverter();
+            contextSensitiveGrammar.PrintToFile("C:\\Users\\volod\\Desktop\\Git\\Grammars\\PrimeGrammar\\UnarGrammarLba.txt");
+            Generator generator = new Generator(contextSensitiveGrammar, "");
             generator.Execute();
         }
 

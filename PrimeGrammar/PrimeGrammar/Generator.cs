@@ -8,8 +8,7 @@ namespace PrimeGrammar
 {
     public class Generator
     {
-        // Length of number in binary <= 10
-        private const int MaxLength = 25;
+        private const int MaxLength = 12;
         
         private const int MaxIterations = 1_000_0000;
 
@@ -207,6 +206,7 @@ namespace PrimeGrammar
                     }
 
                     sw.WriteLine("        {0}", Grammar.Productions[state.Position[state.Position.Count - 1]]);
+                    Console.WriteLine(s);
                 }
                 return true;
             }

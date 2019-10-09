@@ -12,26 +12,32 @@ namespace PrimeGrammar.Converter
         
         private const string Axiom2 = "S2";
 
-        private const string LeftMarker = "&";
+        private const string LeftMarker = "$";
         
-        private const string RightMarker = "$";
+        private const string RightMarker = "#";
         
-        private string[] AlphabetInput = {"0", "1"};
+        private string[] AlphabetInput = {"1"};
 
         private List<Terminal> Terminals;
 
         private List<Production> Productions;
+        
+        private List<Variable> NonTerminals;
 
         private Grammar Grammar;
 
         public ContextSensitiveConverter()
         {
+            NonTerminals = new List<Variable>();
             Terminals = new List<Terminal>();
             Productions = new List<Production>();
+            
             foreach (var symb in AlphabetInput)
             {
                 Terminals.Add(new Terminal(symb));
             }
+            
+            
         }
 
         public Grammar Convert(TuringMachine turingMachine)
@@ -164,7 +170,7 @@ namespace PrimeGrammar.Converter
                                         // 6.2     [Z, b] [q, X,a] → [p,Z,b] [Y, a], если (p, Y, L)∈δ(q,X)
                                         Add($"[{Z},{b.Name}]",
                                             $"[{transition.From.ID},{transition.Read},{a.Name}]",
-                                            $"[{transition.To.ID},{Z},{b}]",
+                                            $"[{transition.To.ID},{Z},{b.Name}]",
                                             $"[{transition.Write},{a.Name}]");
                                         /////////////
 
@@ -172,7 +178,7 @@ namespace PrimeGrammar.Converter
                                         // 7.3     [Z, b] [q,X, a,$] → [p, Z, b] [Y, a,$],  если (p, Y, L)∈δ(q,X);
                                         Add($"[{Z},{b.Name}]",
                                             $"[{transition.From.ID},{transition.Read},{a.Name}, {LeftMarker}]",
-                                            $"[{transition.To.ID},{Z},{b}]",
+                                            $"[{transition.To.ID},{Z},{b.Name}]",
                                             $"[{transition.Write},{a.Name}, {LeftMarker}]");
                                         /////////////
                                     }
@@ -298,7 +304,7 @@ namespace PrimeGrammar.Converter
                     }
                 }
             }
-            return null;
+            return new Grammar(new Variable(Axiom1), Productions, Terminals, NonTerminals);
         }
 
         private void Add(string arg, string val)
