@@ -167,6 +167,7 @@ namespace PrimeGrammar
                 s += item.Name;
             }
 
+            Console.WriteLine(s);
             if (!Used.Contains(s))
             {
                 Used.Add(s);
