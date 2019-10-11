@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Sockets;
 
 namespace PrimeGrammar.Converter
@@ -22,7 +23,15 @@ namespace PrimeGrammar.Converter
 
         private List<Production> Productions;
         
+        private List<Production> ResultProductions;
+        
         private List<Variable> NonTerminals;
+
+        private HashSet<GrammarSymbol> Used; 
+        
+        private HashSet<GrammarSymbol> From;
+        
+        private HashSet<GrammarSymbol> To;
 
         private Grammar Grammar;
 
@@ -31,6 +40,8 @@ namespace PrimeGrammar.Converter
             NonTerminals = new List<Variable>();
             Terminals = new List<Terminal>();
             Productions = new List<Production>();
+            From = new HashSet<GrammarSymbol>();
+            To = new HashSet<GrammarSymbol>();
             
             foreach (var symb in AlphabetInput)
             {
@@ -293,7 +304,15 @@ namespace PrimeGrammar.Converter
                                             $"[{transition.To.ID},{Z},{b.Name}]",
                                             $"[{transition.Write},{a.Name}]");
                                         /////////////
-
+                                        
+                                        /////////////
+                                        // 6.4     [¢, Z, b] [q, X,a] → [¢,p,Z,b] [Y, a], если (p, Y, L)∈δ(q,X)
+                                        Add($"[{LeftMarker},{Z},{b.Name}]",
+                                            $"[{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{LeftMarker},{transition.To.ID},{Z},{b.Name}]",
+                                            $"[{transition.Write},{a.Name}]");
+                                        /////////////
+                                        
                                         /////////////
                                         // 7.3     [Z, b] [q,X, a,$] → [p, Z, b] [Y, a,$],  если (p, Y, L)∈δ(q,X);
                                         Add($"[{Z},{b.Name}]",
@@ -308,12 +327,16 @@ namespace PrimeGrammar.Converter
                     }
                 }
             }
+
+            RemoveProductions();
             
-            return new Grammar(new Variable(Axiom1), Productions, Terminals, NonTerminals);
+            return new Grammar(new Variable(Axiom1), ResultProductions, Terminals, NonTerminals);
         }
 
         private void Add(string arg, string val)
         {
+            From.Add(new Variable(arg));
+            To.Add(new Variable(val));
             Productions.Add(new Production(arg, val));
         }
         
@@ -321,16 +344,68 @@ namespace PrimeGrammar.Converter
         {
             List<GrammarSymbol> arg = new List<GrammarSymbol>();
             List<GrammarSymbol> val = new List<GrammarSymbol>();
-            
+
             if (arg1 != null)
+            {
                 arg.Add(new Variable(arg1));
+                From.Add(new Variable(arg1));
+            }
+
             if (arg2 != null)
+            {
                 arg.Add(new Variable(arg2));
+                From.Add(new Variable(arg2));
+            }
+
             if (val1 != null)
+            {
                 val.Add(new Variable(val1));
+                To.Add(new Variable(val1));
+            }
+
             if (val2 != null)
+            {
                 val.Add(new Variable(val2));
+                To.Add(new Variable(val2));
+            }
+            
             Productions.Add(new Production(arg, val));
+        }
+
+        private void RemoveProductions()
+        {
+            ResultProductions = new List<Production>();
+            Used = new HashSet<GrammarSymbol>();
+            Dfs(new Variable(Axiom1));
+        }
+
+        private void Dfs(GrammarSymbol current)
+        {
+            Used.Add(current);
+            Console.WriteLine(current.Name);
+            foreach (var production in Productions)
+            {
+                foreach (var arg in production.LeftPart)
+                {
+                    if (arg.Equals(current))
+                    {
+                        foreach (var val in production.RightPart)
+                        {
+                            if (AlphabetInput.Contains(val.Name))
+                            {
+                                ResultProductions.Add(production);
+                                continue;
+                            }
+                            
+                            if (!Used.Contains(val))
+                            {
+                                ResultProductions.Add(production);
+                                Dfs(val);
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }

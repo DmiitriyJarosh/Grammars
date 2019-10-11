@@ -8,7 +8,7 @@ namespace PrimeGrammar
 {
     public class Generator
     {
-        private const int MaxLength = 12;
+        private const int MaxLength = 23;
         
         private const int MaxIterations = 1_000_0000;
 
@@ -166,8 +166,7 @@ namespace PrimeGrammar
             {
                 s += item.Name;
             }
-
-            Console.WriteLine(s);
+            
             if (!Used.Contains(s))
             {
                 Used.Add(s);
