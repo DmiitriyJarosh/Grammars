@@ -22,16 +22,8 @@ namespace PrimeGrammar.Converter
         private List<Terminal> Terminals;
 
         private List<Production> Productions;
-        
-        private List<Production> ResultProductions;
-        
-        private List<Variable> NonTerminals;
 
-        private HashSet<GrammarSymbol> Used; 
-        
-        private HashSet<GrammarSymbol> From;
-        
-        private HashSet<GrammarSymbol> To;
+        private List<Variable> NonTerminals;
 
         private Grammar Grammar;
 
@@ -40,15 +32,11 @@ namespace PrimeGrammar.Converter
             NonTerminals = new List<Variable>();
             Terminals = new List<Terminal>();
             Productions = new List<Production>();
-            From = new HashSet<GrammarSymbol>();
-            To = new HashSet<GrammarSymbol>();
-            
+
             foreach (var symb in AlphabetInput)
             {
                 Terminals.Add(new Terminal(symb));
             }
-            
-            
         }
 
         public Grammar Convert(TuringMachine turingMachine)
@@ -328,15 +316,11 @@ namespace PrimeGrammar.Converter
                 }
             }
 
-            RemoveProductions();
-            
-            return new Grammar(new Variable(Axiom1), ResultProductions, Terminals, NonTerminals);
+            return new Grammar(new Variable(Axiom1), RemoveProductions(), Terminals, NonTerminals);
         }
 
         private void Add(string arg, string val)
         {
-            From.Add(new Variable(arg));
-            To.Add(new Variable(val));
             Productions.Add(new Production(arg, val));
         }
         
@@ -346,66 +330,138 @@ namespace PrimeGrammar.Converter
             List<GrammarSymbol> val = new List<GrammarSymbol>();
 
             if (arg1 != null)
-            {
                 arg.Add(new Variable(arg1));
-                From.Add(new Variable(arg1));
-            }
 
             if (arg2 != null)
-            {
                 arg.Add(new Variable(arg2));
-                From.Add(new Variable(arg2));
-            }
 
             if (val1 != null)
-            {
                 val.Add(new Variable(val1));
-                To.Add(new Variable(val1));
-            }
 
             if (val2 != null)
-            {
                 val.Add(new Variable(val2));
-                To.Add(new Variable(val2));
-            }
-            
+
             Productions.Add(new Production(arg, val));
         }
-
-        private void RemoveProductions()
+        
+        private List<Production> RemoveProductions()
         {
-            ResultProductions = new List<Production>();
-            Used = new HashSet<GrammarSymbol>();
-            Dfs(new Variable(Axiom1));
-        }
+            List<Production> resultProductions = new List<Production>();
+            
+            HashSet<GrammarSymbol> provedVariables;
 
-        private void Dfs(GrammarSymbol current)
-        {
-            Used.Add(current);
-            Console.WriteLine(current.Name);
-            foreach (var production in Productions)
+            HashSet<GrammarSymbol> goInTerminal;
+
+            provedVariables = new HashSet<GrammarSymbol>();
+            goInTerminal = new HashSet<GrammarSymbol>();
+            
+            bool tryFind = true;
+            foreach (var symb in AlphabetInput)
             {
-                foreach (var arg in production.LeftPart)
+                goInTerminal.Add(new Variable(symb));
+            }
+            
+            while (tryFind)
+            {
+                tryFind = false;
+                foreach (var production in Productions)
                 {
-                    if (arg.Equals(current))
+                    bool ok = true;
+                    foreach (var value in production.RightPart)
                     {
-                        foreach (var val in production.RightPart)
+                        if (!goInTerminal.Contains(value))
                         {
-                            if (AlphabetInput.Contains(val.Name))
+                            ok = false;
+                            break;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        foreach (var arg in production.LeftPart)
+                        {
+                            if (!goInTerminal.Contains(arg))
                             {
-                                ResultProductions.Add(production);
-                                continue;
-                            }
-                            
-                            if (!Used.Contains(val))
-                            {
-                                ResultProductions.Add(production);
-                                Dfs(val);
+                                goInTerminal.Add(arg);
+                                tryFind = true;
                             }
                         }
                     }
+
+                    if (tryFind)
+                    {
+                        break;
+                    }
                 }
             }
+
+            tryFind = true;
+
+            provedVariables.Add(new Variable(Axiom1));
+
+            while (tryFind)
+            {
+                tryFind = false;
+                foreach (var production in Productions)
+                {
+                    bool ok = true;
+                    foreach (var arg in production.LeftPart)
+                    {
+                        if (!provedVariables.Contains(arg))
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        foreach (var val in production.RightPart)
+                        {
+                            if (!provedVariables.Contains(val))
+                            {
+                                provedVariables.Add(val);
+                                tryFind = true;
+                            }
+                        }
+                    }
+
+                    if (tryFind)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            foreach (var production in Productions)
+            {
+                bool ok = true;
+
+                foreach (var arg in production.LeftPart)
+                {
+                    if (!provedVariables.Contains(arg))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+                
+                foreach (var val in production.RightPart)
+                {
+                    if (!goInTerminal.Contains(val))
+                    {
+                        ok = false;
+                        break;
+                    }
+                }
+
+                if (ok)
+                {
+                    resultProductions.Add(production);
+                }
+            }
+
+            return resultProductions;
         }
     }
 }

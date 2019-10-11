@@ -8,7 +8,7 @@ namespace PrimeGrammar
 {
     public class Generator
     {
-        private const int MaxLength = 23;
+        private const int MaxLength = 30;
         
         private const int MaxIterations = 1_000_0000;
 
