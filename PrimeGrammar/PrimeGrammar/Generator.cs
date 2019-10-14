@@ -8,7 +8,7 @@ namespace PrimeGrammar
 {
     public class Generator
     {
-        private const int MaxLength = 30;
+        private const int MaxLength = 25;
         
         private const int MaxIterations = 1_000_0000;
 
@@ -21,6 +21,8 @@ namespace PrimeGrammar
         private string WritePath;
 
         private HashSet<string> Used;
+        
+        private HashSet<string> Printed;
 
         public Generator(Grammar grammar, string filePath)
         {
@@ -28,7 +30,8 @@ namespace PrimeGrammar
             FilePath = filePath;
             Eps = new Variable("eps");
             Used = new HashSet<string>();
-            
+            Printed = new HashSet<string>();
+
             string startupPath = Environment.CurrentDirectory;
             WritePath = startupPath + "\\" + "numbers.txt";
         }
@@ -199,12 +202,18 @@ namespace PrimeGrammar
                         s += symb.Name;
                     }
 
+                    if (Printed.Contains(s))
+                    {
+                        return true;
+                    }
+
+                    Printed.Add(s);
+                    
                     sw.WriteLine(s);
                     for (int i = 0; i < state.Position.Count - 1; i++)
                     {
                         sw.WriteLine("        {0}", Grammar.Productions[state.Position[i]]);
                     }
-
                     sw.WriteLine("        {0}", Grammar.Productions[state.Position[state.Position.Count - 1]]);
                     Console.WriteLine(s);
                 }

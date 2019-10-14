@@ -44,11 +44,14 @@ namespace PrimeGrammar.Converter
             String arg;
             String val;
 
+            // S1 -> 11
+            Add(Axiom1, null, "1", "1");
+            
             foreach (var a in Terminals)
             {
-                //1     S1→[q0,¢,a, a, $]
+                /*//1     S1→[q0,¢,a, a, $]
                 val = String.Format("[{0},{2},{1},{1},{3}]", turingMachine.InitialState.ID, a.Name,LeftMarker, RightMarker);
-                Add(Axiom1, val);
+                Add(Axiom1, val);*/
                 
                 //4.1     S1→[q0, ¢, a, a]S2
                 val = String.Format("[{0},{1},{2},{2}]", turingMachine.InitialState.ID, LeftMarker, a.Name);
@@ -179,12 +182,12 @@ namespace PrimeGrammar.Converter
                             {
                                 foreach (var X in turingMachine.Alphabet)
                                 {
-                                    /////////////
+                                    /*/////////////
                                     //2.1     [q, ¢, X, a, $]→[¢, p,X,a, $]
                                     arg = $"[{transition.From.ID},{LeftMarker},{X},{a.Name},{RightMarker}]";
                                     val = $"[{LeftMarker},{transition.To.ID},{X},{a.Name},{RightMarker}]";
                                     Add(arg, val);
-                                    /////////////
+                                    /////////////*/
                                     
                                     
                                     /////////////
@@ -197,12 +200,12 @@ namespace PrimeGrammar.Converter
                             }
                             else
                             {
-                                /////////////
+                                /*/////////////
                                 // 2.3     [¢, q, X, a, $] → [¢, Y, a, p, $], если (p, Y, R)∈δ(q,X);
                                 arg = $"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name},{RightMarker}]";
                                 val = $"[{LeftMarker},{transition.Write},{a.Name},{transition.To.ID},{RightMarker}]";
                                 Add(arg, val);
-                                /////////////
+                                /////////////*/
 
                                 /////////////
                                 // 7.1     [q,X, a, $] → [Y, a, p,$], если (p, Y, R)∈δ(q,X);
@@ -215,6 +218,14 @@ namespace PrimeGrammar.Converter
                                 {
                                     foreach (var Z in turingMachine.Alphabet)
                                     {
+                                        /*/////////////
+                                        // 5.4     [¢, q, X,a] [Z, b,$]→ [¢, Y, a] [p, Z,b,$], если (p, Y, R)∈δ(q,X);
+                                        Add($"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name}]",
+                                            $"[{Z},{b.Name},{RightMarker}]",
+                                            $"[{LeftMarker},{transition.Write},{a.Name}]",
+                                            $"[{transition.To.ID},{Z},{b.Name},{RightMarker}]");
+                                        /////////////*/
+
                                         /////////////
                                         // 5.3     [¢, q, X,a] [Z, b]→ [¢, Y, a] [p, Z,b], если (p, Y, R)∈δ(q,X);
                                         Add($"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name}]",
@@ -222,7 +233,7 @@ namespace PrimeGrammar.Converter
                                             $"[{LeftMarker},{transition.Write},{a.Name}]",
                                             $"[{transition.To.ID},{Z},{b.Name}]");
                                         /////////////
-                                        
+
                                         /////////////
                                         // 6.1     [q,X,a] [Z, b] → [Y, a][p, Z,b], если (p, Y, R)∈δ(q,X); 
                                         Add($"[{transition.From.ID},{transition.Read},{a.Name}]",
@@ -250,12 +261,12 @@ namespace PrimeGrammar.Converter
                             {
                                 foreach (var X in turingMachine.Alphabet)
                                 {
-                                    /////////////
+                                    /*/////////////
                                     // 2.4    [¢, X, a, q, $] → [¢, p, X, a, $], если (p, $, L)∈δ(q,$)
                                     arg = $"[{LeftMarker},{X},{a.Name},{transition.From.ID},{RightMarker}]";
                                     val = $"[{LeftMarker},{transition.To.ID},{X},{a.Name},{RightMarker}]";
                                     Add(arg, val);
-                                    /////////////
+                                    /////////////*/
                                     
                                     /////////////
                                     // 7.2    [X, a, q,$] → [p,X, a, $], если (p, $, L)∈δ(q,$);
@@ -267,12 +278,12 @@ namespace PrimeGrammar.Converter
                             }
                             else
                             {
-                                /////////////
+                                /*/////////////
                                 // 2.2     [¢, q, X, a, $] → [p,¢, Y, a, $], если (p, Y, L)∈δ(q,X)
                                 arg = $"[{LeftMarker},{transition.From.ID},{transition.Read},{a.Name},{RightMarker}]";
                                 val = $"[{transition.To.ID},{LeftMarker},{transition.Write},{a.Name},{RightMarker}]";
                                 Add(arg, val);
-                                /////////////
+                                /////////////*/
                                 
                                 /////////////
                                 // 5.2     [¢, q, X,a] → [p,¢, Y,a],  если (p, Y, L)∈δ(q,X)
@@ -308,6 +319,14 @@ namespace PrimeGrammar.Converter
                                             $"[{transition.To.ID},{Z},{b.Name}]",
                                             $"[{transition.Write},{a.Name},{RightMarker}]");
                                         /////////////
+                                        
+                                        /*/////////////
+                                        // 7.4     [¢, Z, b] [q, X,a,$] → [¢,p,Z,b] [Y, a,$], если (p, Y, L)∈δ(q,X);
+                                        Add($"[{LeftMarker},{Z},{b.Name}]",
+                                            $"[{transition.From.ID},{transition.Read},{a.Name},{RightMarker}]",
+                                            $"[{LeftMarker},{transition.To.ID},{Z},{b.Name}]",
+                                            $"[{transition.Write},{a.Name},{RightMarker}]");
+                                        /////////////*/
                                     }
                                 }
                             }
