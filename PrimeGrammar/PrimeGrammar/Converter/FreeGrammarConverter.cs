@@ -36,23 +36,7 @@ namespace PrimeGrammar.Converter
             }
             
             Console.WriteLine("2/6 step finished");
-            
-//            // production 3
-//            productions.Add(new Production(
-//                new List<GrammarSymbol>(){new Variable("A2")},
-//                new List<GrammarSymbol>(){new Variable("A3")}
-//            ));
-//            
-//            Console.WriteLine("3/8 step finished");
-//            
-//            // production 4
-//            productions.Add(new Production(
-//                new List<GrammarSymbol>(){new Variable("A3")},
-//                new List<GrammarSymbol>(){new Terminal("[eps,Blank]"), new Variable("A3")}
-//            ));
-//            
-//            Console.WriteLine("4/8 step finished");
-            
+
             // All blanks were added in 1st production so don't need A3 at all
             // production 5
             productions.Add(new Production(
@@ -114,8 +98,7 @@ namespace PrimeGrammar.Converter
             }
 
             Console.WriteLine("4/6 step finished");
-            Console.WriteLine(productions.Count);
-            
+
             FreeGrammarFilter filter = new FreeGrammarFilter();
             //rules for filtering
             filter.AddLeftContextFilter("q1", "q2", new List<string>(){"1", "$"});
@@ -216,18 +199,6 @@ namespace PrimeGrammar.Converter
                             // clever filtering according rules which can be found before
                             if (filter.FilterLeftContext(startState, finishState, E))
                             {
-                                Console.WriteLine(new Production(
-                                    new List<GrammarSymbol>()
-                                    {
-                                        new Variable($"[{b},{E}]"), new Variable(startState.ID),
-                                        new Variable($"[{a},{readSymbol}]")
-                                    },
-                                    new List<GrammarSymbol>()
-                                    {
-                                        new Variable(finishState.ID), new Variable($"[{b},{E}]"),
-                                        new Variable($"[{a},{writeSymbol}]")
-                                    }
-                                ).ToString());
                                 continue;
                             }
                             
@@ -243,8 +214,7 @@ namespace PrimeGrammar.Converter
             }
             
             Console.WriteLine("5/6 step finished");
-            Console.WriteLine(productions.Count);
-            
+
             // production 8
             foreach (var q in turingMachine.RingStates)
             {
@@ -289,7 +259,6 @@ namespace PrimeGrammar.Converter
             }
             
             Console.WriteLine("6/6 step finished");
-            Console.WriteLine(productions.Count);
 
             return productions;
         }
