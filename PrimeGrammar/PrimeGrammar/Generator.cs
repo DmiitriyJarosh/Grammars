@@ -33,7 +33,7 @@ namespace PrimeGrammar
             Printed = new HashSet<string>();
 
             string startupPath = Environment.CurrentDirectory;
-            WritePath = startupPath + "\\" + "numbers.txt";
+            WritePath = filePath;
         }
 
         public void Execute()

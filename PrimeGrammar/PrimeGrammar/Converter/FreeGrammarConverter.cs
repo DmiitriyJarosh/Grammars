@@ -56,7 +56,7 @@ namespace PrimeGrammar.Converter
             };
             
             alphabet.Add("eps");
-            Console.WriteLine(productions.Count);
+            
             // production 6
             foreach (var a in alphabet)
             {

@@ -15,8 +15,8 @@ namespace PrimeGrammar
             Grammar freeGrammar = freeGrammarConverter.Convert(tm);
             freeGrammar.PrintToFile("UnarFreeGrammar.txt");
             contextSensitiveGrammar.PrintToFile("UnarGrammarLba.txt");
-            Generator generatorFree = new Generator(freeGrammar, "");
-            Generator generatorLBA = new Generator(contextSensitiveGrammar, "");
+            Generator generatorFree = new Generator(freeGrammar, "freeGrammarGeneration.txt");
+            Generator generatorLBA = new Generator(contextSensitiveGrammar, "csGrammarGeneration.txt");
             generatorFree.Execute();
             generatorLBA.Execute();
         }
