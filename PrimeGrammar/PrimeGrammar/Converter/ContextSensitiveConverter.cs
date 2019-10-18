@@ -69,26 +69,26 @@ namespace PrimeGrammar.Converter
                 {
                     foreach (var q in turingMachine.RingStates)
                     {
-                        /////////////
+                        /*/////////////
                         //3.1     [q, ¢, X, a, $] →a;
                         arg = $"[{q.ID},{LeftMarker},{X},{a.Name},{RightMarker}]";
                         val = a.Name;
                         Add(arg, val);
-                        /////////////
+                        /////////////*/
                         
-                        /////////////
+                        /*/////////////
                         //3.2     [¢, q, X, a, $] →a;
                         arg = $"[{LeftMarker},{q.ID},{X},{a.Name},{RightMarker}]";
                         val = a.Name;
                         Add(arg, val);
-                        /////////////
+                        /////////////*/
                         
-                        /////////////
+                        /*/////////////
                         //3.3     [¢, X, a, q, $] →a; 
                         arg = $"[{LeftMarker},{X},{a.Name},{q.ID},{RightMarker}]";
                         val = a.Name;
                         Add(arg, val);
-                        /////////////
+                        /////////////*/
                         
                         /////////////
                         //8.1     [q,¢, X, a]→a; 
